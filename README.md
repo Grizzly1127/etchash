@@ -1,3 +1,7 @@
+### Deprecated
+
+Superseded by https://github.com/etclabscore/go-etchash
+
 # Etchash
 
 Etchash is a modified version of ethash, recalibrated via ECIP-1099:
