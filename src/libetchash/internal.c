@@ -41,16 +41,27 @@
 #include "sha3.h"
 #endif // WITH_CRYPTOPP
 
+uint64_t get_epoch_number(uint64_t const block_number)
+{
+    uint64_t epoch_length = ETCHASH_EPOCH_LENGTH;
+    if (block_number >= ETCHASH_ACTIVATION_BLOCK) {
+        epoch_length = ETCHASH_NEW_EPOCH_LENGTH;
+    }
+    return block_number / epoch_length;
+}
+
 uint64_t etchash_get_datasize(uint64_t const block_number)
 {
-	assert(block_number / ETCHASH_EPOCH_LENGTH < 2048);
-	return dag_sizes[block_number / ETCHASH_EPOCH_LENGTH];
+	uint64_t const epoch_number = get_epoch_number(block_number);
+	assert(epoch_number < 2048);
+	return dag_sizes[epoch_number];
 }
 
 uint64_t etchash_get_cachesize(uint64_t const block_number)
 {
-	assert(block_number / ETCHASH_EPOCH_LENGTH < 2048);
-	return cache_sizes[block_number / ETCHASH_EPOCH_LENGTH];
+	uint64_t const epoch_number = get_epoch_number(block_number);
+	assert(epoch_number < 2048);
+	return cache_sizes[epoch_number];
 }
 
 // Follows Sergio's "STRICT MEMORY HARD HASHING FUNCTIONS" (2014)
@@ -274,7 +285,7 @@ etchash_h256_t etchash_get_seedhash(uint64_t block_number)
 {
 	etchash_h256_t ret;
 	etchash_h256_reset(&ret);
-	uint64_t const epochs = block_number / ETCHASH_EPOCH_LENGTH;
+	uint64_t const epochs = get_epoch_number(block_number);
 	for (uint32_t i = 0; i < epochs; ++i)
 		SHA3_256(&ret, (uint8_t*)&ret, 32);
 	return ret;

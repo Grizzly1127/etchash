@@ -646,6 +646,22 @@ BOOST_AUTO_TEST_CASE(test_block60000_verification) {
 	etchash_light_delete(light);
 }
 
+BOOST_AUTO_TEST_CASE(test_block21078887_verification) {
+    // from POC-9 testnet, epoch 3
+    etchash_light_t light = etchash_light_new(21078887);
+    etchash_h256_t seedhash = stringToBlockhash("5440fb1014b46483b7bc9973c89cbc81b4b3e756b57f231bb6fe6ac0ba04455f");
+    BOOST_ASSERT(light);
+    etchash_return_value_t ret = etchash_light_compute(
+        light,
+        seedhash,
+        0x5608734335e0984d
+    );
+    const std::string block_hash = "000000045fc2329fb0f675d1e15b49d4e768bc419bc2aae90be81c08bce39a36";
+    const std::string light_result_string = blockhashToHexString(&ret.result);
+    BOOST_REQUIRE_MESSAGE(block_hash == light_result_string, "\ncompute result: " << light_result_string.c_str() << "\n");
+    etchash_light_delete(light);
+}
+
 // Test of Full DAG creation with the minimal etchash.h API.
 // Commented out since travis tests would take too much time.
 // Uncomment and run on your own machine if you want to confirm
