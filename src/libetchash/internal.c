@@ -285,7 +285,8 @@ etchash_h256_t etchash_get_seedhash(uint64_t block_number)
 {
 	etchash_h256_t ret;
 	etchash_h256_reset(&ret);
-	uint64_t const epochs = get_epoch_number(block_number);
+	// Applied the specification from https://github.com/ethereumclassic/ECIPs/blob/master/_specs/ecip-1099.md#specification
+	uint64_t const epochs = block_number / ETCHASH_EPOCH_LENGTH;
 	for (uint32_t i = 0; i < epochs; ++i)
 		SHA3_256(&ret, (uint8_t*)&ret, 32);
 	return ret;
